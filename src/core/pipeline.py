@@ -3416,10 +3416,12 @@ class StockAnalysisPipeline:
                                     )
                                     if use_image:
                                         return self.notifier._send_email_with_inline_image(
-                                            grp_image_bytes, receivers=receivers
+                                            grp_image_bytes, receivers=receivers,
+                                            stock_names=[r.name for r in group_results],
                                         )
                                     return self.notifier.send_to_email(
-                                        grp_report, receivers=receivers
+                                        grp_report, receivers=receivers,
+                                        stock_names=[r.name for r in group_results],
                                     )
 
                                 email_label = (
@@ -3443,8 +3445,8 @@ class StockAnalysisPipeline:
                                     channel, image_bytes
                                 )
                                 if use_image:
-                                    return self.notifier._send_email_with_inline_image(image_bytes)
-                                return self.notifier.send_to_email(report)
+                                    return self.notifier._send_email_with_inline_image(image_bytes, stock_names=[r.name for r in results])
+                                return self.notifier.send_to_email(report, stock_names=[r.name for r in results])
 
                             channel_success, channel_error = _send_channel_safely(
                                 channel.value,

@@ -137,6 +137,7 @@ class EmailSender:
         subject: Optional[str] = None,
         receivers: Optional[List[str]] = None,
         *,
+        stock_names: Optional[List[str]] = None,
         timeout_seconds: Optional[float] = None,
     ) -> bool:
         """
@@ -146,6 +147,7 @@ class EmailSender:
             content: 邮件内容（支持 Markdown，会转换为 HTML）
             subject: 邮件主题（可选，默认自动生成）
             receivers: 收件人列表（可选，默认使用配置的 receivers）
+            stock_names: 股票名称列表（可选，用于生成主题前缀）
             
         Returns:
             是否发送成功
@@ -163,7 +165,12 @@ class EmailSender:
             # 生成主题
             if subject is None:
                 date_str = datetime.now().strftime('%Y-%m-%d')
-                subject = f"📈 股票智能分析报告 - {date_str}"
+                prefix = ""
+                if stock_names:
+                    names = [n for n in stock_names if n]
+                    if names:
+                        prefix = " ".join(names) + " "
+                subject = f"📈 {prefix}股票智能分析报告 - {date_str}"
             
             # 将 Markdown 转换为简单 HTML
             html_content = markdown_to_html_document(content)
@@ -224,7 +231,8 @@ class EmailSender:
             self._close_server(server)
 
     def _send_email_with_inline_image(
-        self, image_bytes: bytes, receivers: Optional[List[str]] = None
+        self, image_bytes: bytes, receivers: Optional[List[str]] = None,
+        stock_names: Optional[List[str]] = None,
     ) -> bool:
         """Send email with inline image attachment (Issue #289)."""
         if not self._is_email_configured():
@@ -235,7 +243,12 @@ class EmailSender:
         server: Optional[smtplib.SMTP] = None
         try:
             date_str = datetime.now().strftime('%Y-%m-%d')
-            subject = f"📈 股票智能分析报告 - {date_str}"
+            prefix = ""
+            if stock_names:
+                names = [n for n in stock_names if n]
+                if names:
+                    prefix = " ".join(names) + " "
+            subject = f"📈 {prefix}股票智能分析报告 - {date_str}"
             msg = MIMEMultipart('related')
             msg['Subject'] = Header(subject, 'utf-8')
             msg['From'] = self._format_sender_address(sender)
