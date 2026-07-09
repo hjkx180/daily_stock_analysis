@@ -170,7 +170,7 @@ class EmailSender:
                     names = [n for n in stock_names if n]
                     if names:
                         prefix = " ".join(names) + " "
-                subject = f"📈 {prefix}股票智能分析报告 - {date_str}"
+                subject = f"{prefix}{date_str}"
             
             # 将 Markdown 转换为简单 HTML
             html_content = markdown_to_html_document(content)
@@ -248,7 +248,7 @@ class EmailSender:
                 names = [n for n in stock_names if n]
                 if names:
                     prefix = " ".join(names) + " "
-            subject = f"📈 {prefix}股票智能分析报告 - {date_str}"
+            subject = f"{prefix}{date_str}"
             msg = MIMEMultipart('related')
             msg['Subject'] = Header(subject, 'utf-8')
             msg['From'] = self._format_sender_address(sender)
